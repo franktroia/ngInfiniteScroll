@@ -15,7 +15,7 @@ module.exports = (grunt) ->
       options:
         max_line_length:
           level: 'ignore'
-#        line_endings:
+#        line_ending s:
 #          value: 'unix'
 #          level: 'error'
         no_stand_alone_at:
