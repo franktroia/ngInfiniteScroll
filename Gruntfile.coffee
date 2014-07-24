@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
-  grunt.loadNpmTasks 'grunt-testacular'
+  grunt.loadNpmTasks 'grunt-karma'
 
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -15,9 +15,9 @@ module.exports = (grunt) ->
       options:
         max_line_length:
           level: 'ignore'
-        line_endings:
-          value: 'unix'
-          level: 'error'
+#        line_endings:
+#          value: 'unix'
+#          level: 'error'
         no_stand_alone_at:
           level: 'error'
     clean:
@@ -49,10 +49,10 @@ module.exports = (grunt) ->
       dist:
         src: ['build/ng-infinite-scroll.js']
         dest: 'build/ng-infinite-scroll.min.js'
-    testacular:
+    karma:
       unit:
         options:
-          configFile: 'test/testacular.conf.js'
+          configFile: 'test/karma.conf.js'
           autoWatch: true
           browsers: ['Chrome', 'PhantomJS']
           reporters: ['dots']
@@ -60,4 +60,4 @@ module.exports = (grunt) ->
           keepalive: true
 
   grunt.registerTask 'default', ['coffeelint', 'clean', 'coffee', 'concat', 'uglify']
-  grunt.registerTask 'test', ['testacular']
+  grunt.registerTask 'test', ['karma']
