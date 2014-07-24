@@ -221,6 +221,32 @@ describe 'Infinite Scroll', ->
       el.remove()
       scope.$destroy()
 
+    'delays scrolling until the infinite-scroll-delay attribute': (scroller, container, injScope) ->
+      el = angular.element(scroller)
+      $document.append(el)
+
+      isWindow = true unless container?
+      if not isWindow
+        container.height(1000)
+      else
+        sinon.stub(fakeWindow, 'height').returns(1000)
+        container = fakeWindow
+      
+      scope = $rootScope.$new(true)
+      for k, v of injScope
+        scope[k] = v
+      scope.scroll = sinon.spy()
+      $compile(el)(scope)
+
+      container.scroll()
+      scope.scroll.should.not.have.been.called
+      
+      $timeout.flush(2000) # In angular-mocks 1.2, flush accepts a delay.
+      scope.scroll.should.have.been.calledOnce
+
+      el.remove()
+      scope.$destroy()
+
   scrollers =
     'triggers on scrolling': ->
       """
@@ -256,6 +282,11 @@ describe 'Infinite Scroll', ->
       """
       <div infinite-scroll='scroll()' infinite-scroll-distance='5' style='height: 10000px;'></div>
       """ 
+
+    'delays scrolling until the infinite-scroll-delay attribute': -> 
+      """
+      <div infinite-scroll='scroll()' infinite-scroll-delay='2000' style='height: 1000px;'></div>
+      """       
 
   for test, scroller of scrollers
     ((scroller, test) ->

@@ -10,6 +10,7 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
     infiniteScrollDistance: '='
     infiniteScrollDisabled: '='
     infiniteScrollUseDocumentBottom: '='
+    infiniteScrollDelay: '='
 
   link: (scope, elem, attrs) ->
     $window = angular.element($window)
@@ -27,9 +28,9 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
     # document. It is recommended to use infinite-scroll-disabled
     # with a boolean that is set to true when the function is
     # called in order to throttle the function call.
-    handler = ->
+    handler = (evt, scrollImmediately) ->
       if container == $window
-        containerBottom = $(container).height() + $(container).scrollTop()
+        containerBottom = container.height() + container.scrollTop()
         elementBottom = $(elem).offset().top + $(elem).height()
       else
         containerBottom = container.height()
@@ -42,16 +43,21 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
         elementBottom = $(document).height()
 
       remaining = elementBottom - containerBottom
-      shouldScroll = remaining <= $(container).height() * scrollDistance + 1
+      shouldScroll = remaining <= container.height() * scrollDistance + 1
 
       if shouldScroll
         checkWhenEnabled = true
 
         if scrollEnabled
-          if scope.$$phase || $rootScope.$$phase
-            scope.infiniteScroll()
+          if !scope.infiniteScrollDelay || scrollImmediately
+            if scope.$$phase || $rootScope.$$phase
+              scope.infiniteScroll()
+            else
+              scope.$apply(scope.infiniteScroll)
           else
-            scope.$apply(scope.infiniteScroll)
+            $timeout (->
+              handler(null, true)
+            ), scope.infiniteScrollDelay || 0
       else
         checkWhenEnabled = false
 
@@ -152,6 +158,17 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
         changeContainer newContainer
       else
         throw new Exception("invalid infinite-scroll-container attribute.")
+
+    # infinite-scroll-delay specifies how many ms the infinite scroller should
+    # wait until causing the infinite scroll. After the delay, if the criteria
+    # for causing the infinite scroll are still met, the infinite scroller will
+    # scroll. This is useful if you don't want the scroll to fire if a user 
+    # just barely touches the bottom of the screen for a brief moment.
+    handleInfiniteScrollDelay = (v) ->
+      infiniteScrollDelay = v
+
+    scope.$watch 'infiniteScrollDelay', handleInfiniteScrollDelay
+    handleInfiniteScrollDelay(scope.infiniteScrollDelay)
 
     scope.$watch 'infiniteScrollContainer', handleInfiniteScrollContainer
     handleInfiniteScrollContainer(scope.infiniteScrollContainer or [])
