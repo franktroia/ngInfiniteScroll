@@ -8,7 +8,7 @@ module.exports = function(config) {
         // base path, that will be used to resolve files and exclude
         basePath: '../',
 
-        frameworks: ['mocha', 'sinon', 'sinon-chai', 'chai'],
+        frameworks: ['mocha', 'sinon', 'chai'],
 
         preprocessors: {
             '**/*.coffee': 'coffee'
