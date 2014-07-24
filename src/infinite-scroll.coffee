@@ -21,6 +21,7 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
     container = null
     immediateCheck = true
     useDocumentBottom = false
+    scrollDelay = null
 
     # infinite-scroll specifies a function to call when the window,
     # or some other container specified by infinite-scroll-container,
@@ -49,7 +50,7 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
         checkWhenEnabled = true
 
         if scrollEnabled
-          if !scope.infiniteScrollDelay || scrollImmediately
+          if !scrollDelay || scrollImmediately
             if scope.$$phase || $rootScope.$$phase
               scope.infiniteScroll()
             else
@@ -57,7 +58,7 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
           else
             $timeout (->
               handler(null, true)
-            ), scope.infiniteScrollDelay || 0
+            ), scrollDelay || 0
       else
         checkWhenEnabled = false
 
@@ -162,10 +163,10 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_
     # infinite-scroll-delay specifies how many ms the infinite scroller should
     # wait until causing the infinite scroll. After the delay, if the criteria
     # for causing the infinite scroll are still met, the infinite scroller will
-    # scroll. This is useful if you don't want the scroll to fire if a user 
+    # scroll. This is useful if you don't want the scroll to fire if a user
     # just barely touches the bottom of the screen for a brief moment.
     handleInfiniteScrollDelay = (v) ->
-      infiniteScrollDelay = v
+      scrollDelay = v
 
     scope.$watch 'infiniteScrollDelay', handleInfiniteScrollDelay
     handleInfiniteScrollDelay(scope.infiniteScrollDelay)
