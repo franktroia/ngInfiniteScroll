@@ -43,7 +43,8 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-chai": "^0.1.0",
     "karma": "^0.12.17",
-    "karma-cli": "0.0.4"
+    "karma-cli": "0.0.4",
+    "karma-sinon-chai": "^0.2.0"
   },
   "dependencies": {}
 }
